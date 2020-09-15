@@ -1,21 +1,39 @@
 {
-  "name": "react-native-image-view",
-  "version": "2.1.9",
+  "_args": [
+    [
+      "react-native-image-view@2.1.9",
+      "/Users/herasymova/treedom/treedom-monorepo/packages/mobile-fe"
+    ]
+  ],
+  "_from": "react-native-image-view@2.1.9",
+  "_id": "react-native-image-view@2.1.9",
+  "_inBundle": false,
+  "_integrity": "sha512-+DA/+tLM7KHaLs41Hdd+m5UpGX2qtEdMamMZCsXCsJ5J6RwWrqBXQrGVB9Op7dIkZW2DDRVKZTP/FuSNEGtzJg==",
+  "_location": "/react-native-image-view",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "react-native-image-view@2.1.9",
+    "name": "react-native-image-view",
+    "escapedName": "react-native-image-view",
+    "rawSpec": "2.1.9",
+    "saveSpec": null,
+    "fetchSpec": "2.1.9"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/react-native-image-view/-/react-native-image-view-2.1.9.tgz",
+  "_spec": "2.1.9",
+  "_where": "/Users/herasymova/treedom/treedom-monorepo/packages/mobile-fe",
+  "author": {
+    "name": "Anton Kalinin"
+  },
+  "bugs": {
+    "url": "https://github.com/antonKalinin/react-native-image-view/issues"
+  },
   "description": "React Native modal image view with pinch zoom",
-  "main": "src/ImageView",
-  "scripts": {
-    "flow": "flow",
-    "eslint-check": "eslint --print-config .eslintrc.js | eslint-config-prettier-check",
-    "postversion": "git push origin master && git push --tags origin master"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/antonKalinin/react-native-image-view.git"
-  },
-  "peerDependencies": {
-    "react": ">=15.2.0",
-    "react-native": ">=0.44.0"
-  },
   "devDependencies": {
     "babel-eslint": "10.0.1",
     "eslint": "5.16.0",
@@ -30,6 +48,12 @@
     "flow-bin": "0.100.0",
     "prettier": "1.18.2"
   },
+  "files": [
+    "package.json",
+    "readme.md",
+    "src"
+  ],
+  "homepage": "https://github.com/antonKalinin/react-native-image-view#readme",
   "keywords": [
     "react-native",
     "image",
@@ -39,15 +63,25 @@
     "pinch",
     "component"
   ],
-  "files": [
-    "package.json",
-    "readme.md",
-    "src"
-  ],
-  "author": "Anton Kalinin",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/antonKalinin/react-native-image-view/issues"
+  "main": "src/ImageView",
+  "name": "react-native-image-view",
+  "peerDependencies": {
+    "react": ">=15.2.0",
+    "react-native": ">=0.44.0"
   },
-  "homepage": "https://github.com/antonKalinin/react-native-image-view#readme"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/antonKalinin/react-native-image-view.git"
+  },
+  "scripts": {
+    "eslint-check": "eslint --print-config .eslintrc.js | eslint-config-prettier-check",
+    "flow": "flow",
+    "postversion": "git push origin master && git push --tags origin master"
+  },
+  "version": "2.1.9",
+  "dependencies": {
+    "react-native-parallax-scroll-view": "^0.21.3",
+    "react-native-vector-icons": "^7.1.0"
+  }
 }

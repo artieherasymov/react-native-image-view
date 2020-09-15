@@ -9,9 +9,11 @@ import {
     Modal,
     Platform,
     View,
-    SafeAreaView,
+    Text,
+    Image,
+    SafeAreaView, TouchableHighlight, TouchableOpacity,
 } from 'react-native';
-
+import Icon from 'react-native-vector-icons/FontAwesome';
 import {
     type ControlType,
     type ControlsType,
@@ -42,6 +44,11 @@ import {
 
 import createStyles from './styles';
 import {Close, Prev, Next} from './controls';
+import ParallaxScrollView from 'react-native-parallax-scroll-view';
+import {CachedImage} from "../../../src/elements/CachedImage";
+import {UserAvatar} from "../../../src/elements/UserAvatar";
+import {UserActivityStyles} from "../../../src/styles/components/User/Activity";
+import {getColor} from "../../../src/library/Utils";
 
 const IMAGE_SPEED_FOR_CLOSE = 1.1;
 const SCALE_MAXIMUM = 5;
@@ -63,8 +70,10 @@ type PropsType = {
     backgroundColor?: string,
     glideAlways?: boolean,
     glideAlwaysDelay?: number,
+    imageUrl: string,
     images: ImageType[],
     imageIndex: number,
+    description: string,
     isVisible: boolean,
     isTapZoomEnabled: boolean,
     isPinchZoomEnabled: boolean,
@@ -84,6 +93,7 @@ export type StateType = {
     isVisible: boolean,
     imageIndex: number,
     imageScale: number,
+    listExpanded: boolean,
     imageTranslate: {x: number, y: number},
     scrollEnabled: boolean,
     panelsVisible: boolean,
@@ -102,6 +112,7 @@ export default class ImageView extends Component<PropsType, StateType> {
         glideAlways: false,
         glideAlwaysDelay: 75,
         controls: {prev: null, next: null},
+        description: '',
     };
 
     constructor(props: PropsType) {
@@ -114,6 +125,7 @@ export default class ImageView extends Component<PropsType, StateType> {
         );
 
         this.state = {
+            listExpanded: false,
             images: props.images,
             isVisible: props.isVisible,
             imageIndex: props.imageIndex,
@@ -126,6 +138,7 @@ export default class ImageView extends Component<PropsType, StateType> {
         };
         this.glideAlwaysTimer = null;
         this.listRef = null;
+        this.scrollViewRef = null;
         this.isScrolling = false;
         this.footerHeight = 0;
         this.initialTouches = [];
@@ -304,6 +317,7 @@ export default class ImageView extends Component<PropsType, StateType> {
     };
 
     onGestureStart(event: NativeEventType) {
+        console.log('here');
         this.initialTouches = event.touches;
         this.currentTouchesNum = event.touches.length;
     }
@@ -751,7 +765,7 @@ export default class ImageView extends Component<PropsType, StateType> {
     };
 
     render(): Node {
-        const {animationType, renderFooter, backgroundColor} = this.props;
+        const {animationType, renderFooter, backgroundColor, description, imageUrl} = this.props;
         const {
             images,
             imageIndex,
@@ -808,22 +822,73 @@ export default class ImageView extends Component<PropsType, StateType> {
                             React.createElement(close, {onPress: this.close})}
                     </SafeAreaView>
                 </Animated.View>
-                <FlatList
-                    horizontal
-                    pagingEnabled
-                    data={images}
-                    scrollEnabled={scrollEnabled}
-                    scrollEventThrottle={16}
-                    style={styles.container}
-                    ref={this.onFlatListRender}
-                    renderSeparator={() => null}
-                    keyExtractor={this.listKeyExtractor}
-                    onScroll={this.onNextImage}
-                    renderItem={this.renderImage}
-                    getItemLayout={this.getItemLayout}
-                    onMomentumScrollBegin={this.onMomentumScrollBegin}
-                    onMomentumScrollEnd={this.onMomentumScrollEnd}
-                />
+                <ParallaxScrollView
+                    disableScrollViewPanResponder={true}
+                    pointerEvents={'none'}
+                    ref={ref => this.scrollViewRef = ref}
+                    contentContainerStyle={{ borderRadius: 10, flex: 1}}
+                    outputScaleValue={1}
+                    parallaxHeaderHeight={950}
+                    scrollEnabled={false}
+                    showsVerticalScrollIndicator={false}
+                    renderBackground={() => (
+                        <FlatList
+                            horizontal
+                            pagingEnabled
+                            data={images}
+                            scrollEnabled={scrollEnabled}
+                            scrollEventThrottle={16}
+                            style={styles.container}
+                            ref={this.onFlatListRender}
+                            renderSeparator={() => null}
+                            keyExtractor={this.listKeyExtractor}
+                            onScroll={this.onNextImage}
+                            renderItem={this.renderImage}
+                            getItemLayout={this.getItemLayout}
+                            onMomentumScrollBegin={this.onMomentumScrollBegin}
+                            onMomentumScrollEnd={this.onMomentumScrollEnd}
+                        />
+                    )}>
+                    <View style={{ maxHeight: 200, backgroundColor: '#fff', borderTopStartRadius: 10, borderTopEndRadius: 10, padding: 10 }}>
+                        <View style={{ flexDirection: 'row', marginBottom: 15 }}>
+                            {imageUrl ? (
+                                <View style={{ borderRadius: 16, overflow: 'hidden', borderWidth: 0.8, borderColor: '#fff' }}>
+                                    <Image source={{ uri: imageUrl }} style={{ width: 32, height: 32 }} />
+                                </View>
+                            ) : (
+                                <View
+                                    style={[{ width: 32,
+                                        height: 32,
+                                        borderRadius: 16,
+                                        justifyContent: 'center',
+                                        flexDirection: 'row',
+                                        alignItems: 'center',}, { backgroundColor: 'pink' }]}
+                                >
+                                    <Text style={UserActivityStyles.userText}>
+                                        <Text style={{ fontSize: 16, color: '#fff' }}>{'JANE'[0] + 'DOE'.toUpperCase()[0]}</Text>
+                                    </Text>
+                                </View>
+                            )}
+                            <View style={{ marginLeft: 10, justifyContent: 'center' }}>
+                                <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Jane Doe</Text>
+                            </View>
+                        </View>
+                            <Text>{description}</Text>
+                    </View>
+                </ParallaxScrollView>
+                <TouchableHighlight style={{ borderRadius: 50, alignItems: 'center', justifyContent: 'center', position: 'absolute', bottom: 50, left: 200, backgroundColor: '#FFC806', height: 40, width: 40, }} onPress={() => {
+                    if (!this.scrollViewRef) {
+                        return;
+                    }
+                    if (this.state.listExpanded) {
+                        this.scrollViewRef.refs.ScrollView.scrollTo({x: 0, y: 0, animated: true});
+                    } else {
+                        this.scrollViewRef.refs.ScrollView.scrollTo({y: 250, animated: true});
+                    }
+                    this.setState({ listExpanded: !this.state.listExpanded });
+                }}>
+                    {this.state.listExpanded ? <Icon name={'chevron-down'} size={25} /> : <Icon name={'chevron-up'} size={25} />}
+                </TouchableHighlight>
                 {prev &&
                     isPrevVisible &&
                     React.createElement(prev, {onPress: this.scrollToPrev})}
