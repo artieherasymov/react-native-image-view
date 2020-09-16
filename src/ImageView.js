@@ -70,7 +70,7 @@ type PropsType = {
     backgroundColor?: string,
     glideAlways?: boolean,
     glideAlwaysDelay?: number,
-    panel?: JSX.Element,
+    renderPanel?: JSX.Element,
     images: ImageType[],
     imageIndex: number,
     isVisible: boolean,
@@ -765,7 +765,8 @@ export default class ImageView extends Component<PropsType, StateType> {
     };
 
     render(): Node {
-        const {animationType, renderFooter, backgroundColor, panel} = this.props;
+        const {animationType, renderFooter, backgroundColor, renderPanel} = this.props;
+        const panel = renderPanel();
         const {
             images,
             imageIndex,
@@ -851,30 +852,31 @@ export default class ImageView extends Component<PropsType, StateType> {
                     )}>
                     {panel}
                 </ParallaxScrollView>
-                {panel ? <TouchableHighlight style={{
-                    borderRadius: 50,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    position: 'absolute',
-                    bottom: 50,
-                    left: 200,
-                    backgroundColor: '#FFC806',
-                    height: 40,
-                    width: 40,
-                }} onPress={() => {
-                    if (!this.scrollViewRef) {
-                        return;
-                    }
-                    if (this.state.listExpanded) {
-                        this.scrollViewRef.refs.ScrollView.scrollTo({x: 0, y: 0, animated: true});
-                    } else {
-                        this.scrollViewRef.refs.ScrollView.scrollTo({y: 250, animated: true});
-                    }
-                    this.setState({listExpanded: !this.state.listExpanded});
-                }}>
+                {panel ?
+                    <TouchableHighlight style={{
+                        borderRadius: 50,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        position: 'absolute',
+                        bottom: 50,
+                        left: 200,
+                        backgroundColor: '#FFC806',
+                        height: 40,
+                        width: 40,
+                     }} onPress={() => {
+                            if (!this.scrollViewRef) {
+                                return;
+                            }
+                            if (this.state.listExpanded) {
+                                this.scrollViewRef.refs.ScrollView.scrollTo({x: 0, y: 0, animated: true});
+                            } else {
+                                this.scrollViewRef.refs.ScrollView.scrollTo({y: 250, animated: true});
+                            }
+                            this.setState({listExpanded: !this.state.listExpanded});
+                    }}>
                     {this.state.listExpanded ? <Icon name={'chevron-down'} size={25}/> :
                         <Icon name={'chevron-up'} size={25}/>}
-                </TouchableHighlight> : null}
+                    </TouchableHighlight> : null}
                 {prev &&
                     isPrevVisible &&
                     React.createElement(prev, {onPress: this.scrollToPrev})}
