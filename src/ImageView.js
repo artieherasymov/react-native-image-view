@@ -70,10 +70,9 @@ type PropsType = {
     backgroundColor?: string,
     glideAlways?: boolean,
     glideAlwaysDelay?: number,
-    imageUrl: string,
+    renderPaneL?: () => JSX.Element,
     images: ImageType[],
     imageIndex: number,
-    description: string,
     isVisible: boolean,
     isTapZoomEnabled: boolean,
     isPinchZoomEnabled: boolean,
@@ -765,7 +764,7 @@ export default class ImageView extends Component<PropsType, StateType> {
     };
 
     render(): Node {
-        const {animationType, renderFooter, backgroundColor, description, imageUrl} = this.props;
+        const {animationType, renderFooter, backgroundColor, renderPanel} = this.props;
         const {
             images,
             imageIndex,
@@ -849,34 +848,19 @@ export default class ImageView extends Component<PropsType, StateType> {
                             onMomentumScrollEnd={this.onMomentumScrollEnd}
                         />
                     )}>
-                    <View style={{ maxHeight: 200, backgroundColor: '#fff', borderTopStartRadius: 10, borderTopEndRadius: 10, padding: 10 }}>
-                        <View style={{ flexDirection: 'row', marginBottom: 15 }}>
-                            {imageUrl ? (
-                                <View style={{ borderRadius: 16, overflow: 'hidden', borderWidth: 0.8, borderColor: '#fff' }}>
-                                    <Image source={{ uri: imageUrl }} style={{ width: 32, height: 32 }} />
-                                </View>
-                            ) : (
-                                <View
-                                    style={[{ width: 32,
-                                        height: 32,
-                                        borderRadius: 16,
-                                        justifyContent: 'center',
-                                        flexDirection: 'row',
-                                        alignItems: 'center',}, { backgroundColor: 'pink' }]}
-                                >
-                                    <Text style={UserActivityStyles.userText}>
-                                        <Text style={{ fontSize: 16, color: '#fff' }}>{'JANE'[0] + 'DOE'.toUpperCase()[0]}</Text>
-                                    </Text>
-                                </View>
-                            )}
-                            <View style={{ marginLeft: 10, justifyContent: 'center' }}>
-                                <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Jane Doe</Text>
-                            </View>
-                        </View>
-                            <Text>{description}</Text>
-                    </View>
+                    {renderPanel ? renderPanel() : null}
                 </ParallaxScrollView>
-                <TouchableHighlight style={{ borderRadius: 50, alignItems: 'center', justifyContent: 'center', position: 'absolute', bottom: 50, left: 200, backgroundColor: '#FFC806', height: 40, width: 40, }} onPress={() => {
+                {renderPanel ? <TouchableHighlight style={{
+                    borderRadius: 50,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    position: 'absolute',
+                    bottom: 50,
+                    left: 200,
+                    backgroundColor: '#FFC806',
+                    height: 40,
+                    width: 40,
+                }} onPress={() => {
                     if (!this.scrollViewRef) {
                         return;
                     }
@@ -885,10 +869,11 @@ export default class ImageView extends Component<PropsType, StateType> {
                     } else {
                         this.scrollViewRef.refs.ScrollView.scrollTo({y: 250, animated: true});
                     }
-                    this.setState({ listExpanded: !this.state.listExpanded });
+                    this.setState({listExpanded: !this.state.listExpanded});
                 }}>
-                    {this.state.listExpanded ? <Icon name={'chevron-down'} size={25} /> : <Icon name={'chevron-up'} size={25} />}
-                </TouchableHighlight>
+                    {this.state.listExpanded ? <Icon name={'chevron-down'} size={25}/> :
+                        <Icon name={'chevron-up'} size={25}/>}
+                </TouchableHighlight> : null}
                 {prev &&
                     isPrevVisible &&
                     React.createElement(prev, {onPress: this.scrollToPrev})}
