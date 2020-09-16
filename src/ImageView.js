@@ -829,7 +829,7 @@ export default class ImageView extends Component<PropsType, StateType> {
                     ref={ref => this.scrollViewRef = ref}
                     contentContainerStyle={{ borderRadius: 10, flex: 1}}
                     outputScaleValue={1}
-                    parallaxHeaderHeight={950}
+                    parallaxHeaderHeight={900}
                     scrollEnabled={false}
                     showsVerticalScrollIndicator={false}
                     renderBackground={() => (
@@ -855,11 +855,12 @@ export default class ImageView extends Component<PropsType, StateType> {
                 {panel ?
                     <TouchableHighlight style={{
                         borderRadius: 50,
+                        opacity: 0.5,
                         alignItems: 'center',
                         justifyContent: 'center',
                         position: 'absolute',
                         bottom: 50,
-                        left: 200,
+                        left: Dimensions.get('window').width / 2.15,
                         backgroundColor: '#FFC806',
                         height: 40,
                         width: 40,
@@ -870,7 +871,7 @@ export default class ImageView extends Component<PropsType, StateType> {
                             if (this.state.listExpanded) {
                                 this.scrollViewRef.refs.ScrollView.scrollTo({x: 0, y: 0, animated: true});
                             } else {
-                                this.scrollViewRef.refs.ScrollView.scrollTo({y: 250, animated: true});
+                                this.scrollViewRef.refs.ScrollView.scrollTo({y: 450, animated: true});
                             }
                             this.setState({listExpanded: !this.state.listExpanded});
                     }}>
