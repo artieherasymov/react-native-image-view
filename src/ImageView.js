@@ -70,7 +70,7 @@ type PropsType = {
     backgroundColor?: string,
     glideAlways?: boolean,
     glideAlwaysDelay?: number,
-    renderPaneL?: () => JSX.Element,
+    panel?: JSX.Element,
     images: ImageType[],
     imageIndex: number,
     isVisible: boolean,
@@ -105,6 +105,7 @@ export default class ImageView extends Component<PropsType, StateType> {
         backgroundColor: null,
         images: [],
         imageIndex: 0,
+        panel: null,
         isTapZoomEnabled: true,
         isPinchZoomEnabled: true,
         isSwipeCloseEnabled: true,
@@ -764,7 +765,7 @@ export default class ImageView extends Component<PropsType, StateType> {
     };
 
     render(): Node {
-        const {animationType, renderFooter, backgroundColor, renderPanel} = this.props;
+        const {animationType, renderFooter, backgroundColor, panel} = this.props;
         const {
             images,
             imageIndex,
@@ -848,9 +849,9 @@ export default class ImageView extends Component<PropsType, StateType> {
                             onMomentumScrollEnd={this.onMomentumScrollEnd}
                         />
                     )}>
-                    {renderPanel ? renderPanel() : null}
+                    {panel}
                 </ParallaxScrollView>
-                {renderPanel ? <TouchableHighlight style={{
+                {panel ? <TouchableHighlight style={{
                     borderRadius: 50,
                     alignItems: 'center',
                     justifyContent: 'center',
