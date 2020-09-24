@@ -113,6 +113,7 @@ export default class ImageView extends Component<PropsType, StateType> {
         glideAlwaysDelay: 75,
         controls: {prev: null, next: null},
         description: '',
+        isHidden: true,
     };
 
     constructor(props: PropsType) {
@@ -135,6 +136,7 @@ export default class ImageView extends Component<PropsType, StateType> {
             panelsVisible: true,
             isFlatListRerendered: false,
             screenDimensions: initialScreenDimensions,
+            bounceValue: new Animated.Value(250),  //This is the initial position of the subview
         };
         this.glideAlwaysTimer = null;
         this.listRef = null;
@@ -176,6 +178,7 @@ export default class ImageView extends Component<PropsType, StateType> {
     componentDidMount() {
         styles = createStyles(this.state.screenDimensions);
         Dimensions.addEventListener('change', this.onChangeDimension);
+        this.setState({ isHidden: true });
     }
 
     componentDidUpdate() {
@@ -764,6 +767,28 @@ export default class ImageView extends Component<PropsType, StateType> {
         );
     };
 
+    toggleSubView = () => {
+        var toValue = 250;
+        const { isHidden } = this.state;
+
+        if(isHidden) {
+            toValue = 0;
+        }
+
+        //This will animate the transalteY of the subview between 0 & 100 depending on its current state
+        //100 comes from the style below, which is the height of the subview.
+        Animated.spring(
+            this.state.bounceValue,
+            {
+                toValue: toValue,
+                velocity: 100,
+                tension: 40,
+                friction: 10,
+            }
+        ).start();
+        this.setState({ isHidden: !isHidden })
+    }
+
     render(): Node {
         const {animationType, renderFooter, backgroundColor, renderPanel} = this.props;
         const panel = renderPanel();
@@ -823,39 +848,30 @@ export default class ImageView extends Component<PropsType, StateType> {
                             React.createElement(close, {onPress: this.close})}
                     </SafeAreaView>
                 </Animated.View>
-                <ParallaxScrollView
-                    disableScrollViewPanResponder={true}
-                    pointerEvents={'none'}
-                    ref={ref => this.scrollViewRef = ref}
-                    contentContainerStyle={{ borderRadius: 10, flex: 1}}
-                    outputScaleValue={1}
-                    parallaxHeaderHeight={900}
-                    scrollEnabled={false}
-                    showsVerticalScrollIndicator={false}
-                    renderBackground={() => (
-                        <FlatList
-                            horizontal
-                            pagingEnabled
-                            data={images}
-                            scrollEnabled={scrollEnabled}
-                            scrollEventThrottle={16}
-                            style={styles.container}
-                            ref={this.onFlatListRender}
-                            renderSeparator={() => null}
-                            keyExtractor={this.listKeyExtractor}
-                            onScroll={this.onNextImage}
-                            renderItem={this.renderImage}
-                            getItemLayout={this.getItemLayout}
-                            onMomentumScrollBegin={this.onMomentumScrollBegin}
-                            onMomentumScrollEnd={this.onMomentumScrollEnd}
-                        />
-                    )}>
+                <FlatList
+                    horizontal
+                    pagingEnabled
+                    data={images}
+                    scrollEnabled={scrollEnabled}
+                    scrollEventThrottle={16}
+                    style={styles.container}
+                    ref={this.onFlatListRender}
+                    renderSeparator={() => null}
+                    keyExtractor={this.listKeyExtractor}
+                    onScroll={this.onNextImage}
+                    renderItem={this.renderImage}
+                    getItemLayout={this.getItemLayout}
+                    onMomentumScrollBegin={this.onMomentumScrollBegin}
+                    onMomentumScrollEnd={this.onMomentumScrollEnd}
+                />
+                <Animated.View
+                style={{transform: [{translateY: this.state.bounceValue}], position: 'absolute', bottom: 0, width: '100%', minHeight: 250, backgroundColor: '#fff', borderTopStartRadius: 10, borderTopEndRadius: 10}}
+                >
                     {panel}
-                </ParallaxScrollView>
+                </Animated.View>
                 {panel ?
                     <TouchableHighlight style={{
                         borderRadius: 50,
-                        opacity: 0.5,
                         alignItems: 'center',
                         justifyContent: 'center',
                         position: 'absolute',
@@ -865,18 +881,10 @@ export default class ImageView extends Component<PropsType, StateType> {
                         height: 40,
                         width: 40,
                      }} onPress={() => {
-                            if (!this.scrollViewRef) {
-                                return;
-                            }
-                            if (this.state.listExpanded) {
-                                this.scrollViewRef.refs.ScrollView.scrollTo({x: 0, y: 0, animated: true});
-                            } else {
-                                this.scrollViewRef.refs.ScrollView.scrollTo({y: 450, animated: true});
-                            }
-                            this.setState({listExpanded: !this.state.listExpanded});
+                        this.toggleSubView();
                     }}>
-                    {this.state.listExpanded ? <Icon name={'chevron-down'} size={25}/> :
-                        <Icon name={'chevron-up'} size={25}/>}
+                    {!this.state.isHidden ? <Icon name={'chevron-down'} size={25}/> :
+                        <View style={{ bottom: 2 }}><Icon name={'chevron-up'} size={25}/></View>}
                     </TouchableHighlight> : null}
                 {prev &&
                     isPrevVisible &&
